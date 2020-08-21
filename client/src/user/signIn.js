@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { Redirect } from 'react-router-dom';
+import { signIn, authenticate } from '../auth';
 
 class SignIn extends Component {
     state = {
@@ -17,20 +18,13 @@ class SignIn extends Component {
         })
     }
 
-    authenticate = (jwt, next) => {
-        if (typeof(window !== 'undefined')) {
-            localStorage.setItem('token', JSON.stringify(jwt))
-            next()
-        }
-    }
-
     handleSubmit = (e) => {
         e.preventDefault();
         this.setState({ loading: true })
         const { email, password } = this.state;
         const user = { email, password };
 
-        this.signIn(user)
+        signIn(user)
             .then(data => {
                 if (data.error) {
                     this.setState({
@@ -38,26 +32,11 @@ class SignIn extends Component {
                         loading: false
                     })
                 } else {
-                    this.authenticate(data, () => {
+                    authenticate(data, () => {
                         this.setState({ redirect: true })
                     })
                 }
             })
-    }
-
-    signIn = user => {
-        return fetch('http://localhost:8080/signin', {
-            method: 'POST',
-            headers: {
-                Accept: 'application/json',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(user)
-        })
-            .then(res => {
-                return res.json()
-            })
-            .catch(err => console.log(err));
     }
 
     renderSignIn = (email, password) => (
