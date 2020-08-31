@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { signUp } from '../auth';
+import { Link } from 'react-router-dom';
 
 class SignUp extends Component {
     state = {
@@ -60,7 +61,7 @@ class SignUp extends Component {
             </div>
             <div className="form-group">
                 <label className="text-muted">Password</label>
-                <input type="text"
+                <input type="password"
                     value={password}
                     onChange={this.handleChange('password')}
                     className="form-control"
@@ -83,7 +84,7 @@ class SignUp extends Component {
                 }
                 {
                     success ?
-                        <div className="alert alert-info mt-2">Sign up success! Please sign in.</div>
+                        <div className="alert alert-info mt-2">Sign up success! Please <Link to='/signin'>sign in</Link>.</div>
                         : null
                 }
             </div>

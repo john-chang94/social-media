@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import { list } from './apiUser';
+import DefaultProfile from '../images/avatar.png';
+import { Link } from 'react-router-dom';
 
 class Users extends Component {
     state = {
@@ -21,11 +23,11 @@ class Users extends Component {
             <div className="row">
                 {users && users.map((user, index) => (
                     <div className="card col-md-4" key={index}>
-                        <img className="card-img-top"/>
+                        <img className="card-img-top" src={DefaultProfile} alt={user.name} style={{ width: '100%', height: '15vw', objectFit: 'cover' }} />
                         <div className="card-body">
                             <h5 className="card-title">{user.name}</h5>
                             <p className="card-text">{user.email}</p>
-                            <a href="#" className="btn btn-raised btn-sm btn-primary">View Profile</a>
+                            <Link to={`/user/${user._id}`} className="btn btn-raised btn-sm btn-primary">View Profile</Link>
                         </div>
                     </div>
                 ))}
@@ -37,7 +39,7 @@ class Users extends Component {
         const { users } = this.state;
         return (
             <div>
-                <h2 className="mt-5 mb-5">User</h2>
+                <h2 className="mt-5 mb-5">Users</h2>
                 {this.renderUsers(users)}
             </div>
         );
