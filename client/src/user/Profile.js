@@ -3,12 +3,13 @@ import { isAuthenticated } from '../auth';
 import { Redirect, Link, withRouter } from 'react-router-dom';
 import { read } from './apiUser';
 import DefaultProfile from '../images/avatar.png';
+import DeleteUser from './DeleteUser';
 
 const Profile = (props) => {
     const [user, setUser] = useState('');
     const [redirectToSignIn, setRedirectToSignIn] = useState(false);
-    const [userID, setUserId] = useState(props.match.params.userId);
 
+    // Get user info
     const init = userId => {
         const token = isAuthenticated().token;
 
@@ -17,21 +18,18 @@ const Profile = (props) => {
                 if (data.error) {
                     console.log('Error')
                 } else {
+                    // Set user info into state
                     setUser(data)
                 }
             })
     }
 
     useEffect(() => {
-        // Set userID state to own profile userId grabbed from URL
-        // so the useEffect below can run and refresh the user data
-        setUserId(props.match.params.userId)
-    })
-
-    useEffect(() => {
         const userId = props.match.params.userId;
         init(userId);
-    }, [userID])
+        // Take effect when the ID in URL is changed
+        // We place the dependency in an array because syntax
+    }, [props.match.params.userId])
 
     if (redirectToSignIn) return <Redirect to='/signin' />
     return (
@@ -50,12 +48,12 @@ const Profile = (props) => {
 
                     {   // Show edit and delete buttons only to signed in user
                         isAuthenticated().user &&
-                        isAuthenticated().user._id == user._id && (
+                        isAuthenticated().user._id === user._id && (
                             <div className="d-inline-block">
                                 <Link to={`/user/edit/${user._id}`} className="btn btn-raised btn-success mr-5">
                                     Edit Profile
                                 </Link>
-                                <button className="btn btn-raised btn-danger">Delete Profile</button>
+                                <DeleteUser userId={user._id} setRedirectToSignIn={setRedirectToSignIn} />
                             </div>
                         )
                     }

@@ -30,20 +30,19 @@ export const signIn = user => {
 
 export const authenticate = (jwt, next) => {
     if (typeof(window !== 'undefined')) {
-        localStorage.setItem('token', JSON.stringify(jwt))
+        localStorage.setItem('token', JSON.stringify(jwt));
+        // next() allows us to make callback in the onClick callback
         next()
     }
 }
 
-export const signOut = (next) => {
+// SIGN OUT IS DIFFERENT FROM UDEMY, NO API CALL
+export const signOut = () => {
     // window will not be available if the browser is still opening or loading...
-    // That means we need to make sure we have window object and it is not undefined
-    // For that reason we make sure window is not undefined before using localStorage
+    // We need to make sure we have a window object before using localStorage
     if (typeof window !== 'undefined') {
         localStorage.removeItem('token')
     }
-    // next() allows us to make callback in the onClick callback
-    next();
 }
 
 export const isAuthenticated = () => {
