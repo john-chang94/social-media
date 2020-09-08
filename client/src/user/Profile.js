@@ -16,7 +16,7 @@ const Profile = (props) => {
         read(userId, token)
             .then(data => {
                 if (data.error) {
-                    console.log('Error')
+                    setRedirectToSignIn(true);
                 } else {
                     // Set user info into state
                     setUser(data)
