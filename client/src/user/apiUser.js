@@ -47,6 +47,19 @@ export const update = (userId, token, user) => {
     })
 }
 
+// Update user info in local storage
+export const updateUser = (user, next) => {
+    if (typeof window !== 'undefined') {
+        if (localStorage.getItem('token')) {
+            let auth = JSON.parse(localStorage.getItem('token'));
+            auth.user = user // Assign updated user
+            localStorage.setItem('token', JSON.stringify(auth));
+            
+            next();
+        }
+    }
+}
+
 export const remove = (userId, token) => {
     console.log(userId)
     return fetch(`${process.env.REACT_APP_API_URL}/user/${userId}`, {

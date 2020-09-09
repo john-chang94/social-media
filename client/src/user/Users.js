@@ -23,7 +23,12 @@ class Users extends Component {
             <div className="row">
                 {users && users.map((user, index) => (
                     <div className="card col-md-4" key={index}>
-                        <img className="card-img-top" src={DefaultProfile} alt={user.name} style={{ width: '100%', height: '15vw', objectFit: 'cover' }} />
+                        <img src={`${process.env.REACT_APP_API_URL}/user/photo/${user._id}`}
+                            alt={user.name}
+                            style={{ height: '200px', width: 'auto' }}
+                            className="img-thumbnail"
+                            onError={i => (i.target.src = `${DefaultProfile}`)} // Display default image if no photo
+                        />
                         <div className="card-body">
                             <h5 className="card-title">{user.name}</h5>
                             <p className="card-text">{user.email}</p>
