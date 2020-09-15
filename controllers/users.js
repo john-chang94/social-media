@@ -4,7 +4,12 @@ const formidable = require('formidable');
 const fs = require('fs'); // file system
 
 exports.userById = (req, res, next, id) => {
-    User.findById(id).exec((err, user) => {
+    User.findById(id)
+    // Populate followers/following array
+    // Otherwise, we would only get the user ID
+    .populate('following', '_id name')
+    .populate('followers', '_id name')
+    .exec((err, user) => {
         if (err || !user) {
             return res.status(400).json({
                 error: 'User not found'
@@ -117,4 +122,72 @@ exports.deleteUser = (req, res) => {
             message: `${deletedUser.name} deleted successfully`
         })
     });
+}
+
+exports.addFollowing = (req, res, next) => {
+    // The user found in this method is adding the following user to their following list
+    User.findByIdAndUpdate(req.body.userId,
+        { $push: { following: req.body.followId } },
+        (err, result) => {
+        if (err) {
+            return res.status(400).json({
+                error: err
+            })
+        }
+        next();
+    })
+}
+
+exports.addFollower = (req, res) => {
+    // The user that has been added in above method is getting their followers list updated
+    User.findByIdAndUpdate(req.body.followId,
+        { $push: { followers: req.body.userId } }, 
+        { new: true }, // Return updated object
+    )
+    .populate('following', '_id name')
+    .populate('follwers', '_id name')
+    .exec((err, result) => {
+        if (err) {
+            return res.status(400).json({
+                error: err
+            })
+        }
+        result.hashed_password = undefined;
+        result.salt = undefined;
+        res.json(result);
+    })
+}
+
+exports.removeFollowing = (req, res, next) => {
+    // The user found in this method is adding the following user to their following list
+    User.findByIdAndUpdate(req.body.userId,
+        { $pull: { following: req.body.unfollowId } },
+        (err, result) => {
+        if (err) {
+            return res.status(400).json({
+                error: err
+            })
+        }
+        next();
+    })
+}
+
+exports.removeFollower = (req, res) => {
+    // The user that has been added in above method is getting their followers list updated
+    User.findByIdAndUpdate(req.body.unfollowId,
+        { $pull: { followers: req.body.userId } }, 
+        { new: true }, // Return updated object
+    )
+    .populate('following', '_id name')
+    .populate('follwers', '_id name')
+    .exec((err, result) => {
+        if (err) {
+            return res.status(400).json({
+                error: err
+            })
+        }
+        result.hashed_password = undefined;
+        result.salt = undefined;
+        res.json(result);
+    })
 }
