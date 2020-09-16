@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
 import { list } from './apiUser';
+import { isAuthenticated } from '../auth';
 import DefaultProfile from '../images/avatar.png';
-import { Link } from 'react-router-dom';
+import { Link, Redirect } from 'react-router-dom';
 
 class Users extends Component {
     state = {
@@ -42,6 +43,10 @@ class Users extends Component {
 
     render() {
         const { users } = this.state;
+        const token = isAuthenticated().token;
+        if (!token) {
+            return <Redirect to='/signin' />
+        }
         return (
             <div>
                 <h2 className="mt-5 mb-5">Users</h2>

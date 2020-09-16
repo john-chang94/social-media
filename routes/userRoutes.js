@@ -4,6 +4,7 @@ const { requireSignin } = require('../controllers/auths');
 
 const router = express.Router();
 
+// When executed, the user will be adding to its own following list and adding itself to the fetched profile followers list
 router.put('/user/follow', requireSignin, addFollowing, addFollower);
 router.put('/user/unfollow', requireSignin, removeFollowing, removeFollower);
 

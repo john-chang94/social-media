@@ -4,10 +4,15 @@ import { Redirect, Link, withRouter } from 'react-router-dom';
 import { read } from './apiUser';
 import DefaultProfile from '../images/avatar.png';
 import DeleteUser from './DeleteUser';
+import FollowUserButton from './FollowUserButton';
 
 const Profile = (props) => {
     const [user, setUser] = useState('');
     const [redirectToSignIn, setRedirectToSignIn] = useState(false);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [followingList, setFollowingList] = useState([]);
+    const [followerList, setFollowerList] = useState([]);
+    const [error, setError] = useState('');
 
     // Get user info
     const init = userId => {
@@ -16,22 +21,54 @@ const Profile = (props) => {
         read(userId, token)
             .then(data => {
                 if (data.error) {
+                    // If user is not authenticated, send to sign in page
                     setRedirectToSignIn(true);
                 } else {
+                    // Pass the user data and will return a boolean
+                    let following = checkFollow(data);
+                    setIsFollowing(following);
                     // Set user info into state
                     setUser(data)
                 }
             })
     }
 
+    const handleFollow = callApi => {
+        const userId = isAuthenticated().user._id;
+        const token = isAuthenticated().token;
+
+        // (Signed-in user, auth token, user profile)
+        callApi(userId, token, user._id)
+        .then(async data => {
+            if (data.error) {
+                setError(data.error);
+            } else {
+                let following = await checkFollow(data);
+                console.log(following)
+                setUser(data);
+                setIsFollowing(following);
+            }
+        })
+    }
+
+    const checkFollow = nUser => {
+        const jwt = isAuthenticated();
+        // console.log(jwt)
+        const match = nUser.followers.find(follower => {
+            // Check if the signed-in user is following the fetched user's followers list
+            return follower._id === jwt.user._id
+        })
+        console.log(match)
+        return match;
+    }
+
     useEffect(() => {
         const userId = props.match.params.userId;
         init(userId);
         // Take effect when the ID in URL is changed
-        // We place the dependency in an array because syntax
     }, [props.match.params.userId])
 
-    if (redirectToSignIn) return <Redirect to='/signin' />
+    if (redirectToSignIn || !isAuthenticated().token) return <Redirect to='/signin' />
     // Grab photo using URL set up in backend, otherwise use default image
     // Query new Date and get Time to refresh newly uploaded image
     const photoURL = user._id ? `${process.env.REACT_APP_API_URL}/user/photo/${user._id}?${new Date().getTime()}` : DefaultProfile
@@ -56,14 +93,17 @@ const Profile = (props) => {
 
                     {   // Show edit and delete buttons only to signed in user
                         isAuthenticated().user &&
-                        isAuthenticated().user._id === user._id && (
+                        isAuthenticated().user._id === user._id ? (
                             <div className="d-inline-block">
                                 <Link to={`/user/edit/${user._id}`} className="btn btn-raised btn-success mr-5">
                                     Edit Profile
                                 </Link>
                                 <DeleteUser userId={user._id} setRedirectToSignIn={setRedirectToSignIn} />
                             </div>
-                        )
+                        ) :
+                        <FollowUserButton isFollowing={isFollowing}
+                            handleFollow={handleFollow}
+                        />
                     }
                 </div>
             </div>
