@@ -19,15 +19,15 @@ const Profile = (props) => {
         const token = isAuthenticated().token;
 
         read(userId, token)
-            .then(data => {
+            .then(async data => {
                 if (data.error) {
                     // If user is not authenticated, send to sign in page
                     setRedirectToSignIn(true);
                 } else {
-                    // Pass the user data and will return a boolean
-                    let following = checkFollow(data);
+                    // Pass the user data to check profile followers list
+                    let following = await checkFollow(data);
                     setIsFollowing(following);
-                    // Set user info into state
+                    // Set user info in state
                     setUser(data)
                 }
             })
@@ -37,18 +37,17 @@ const Profile = (props) => {
         const userId = isAuthenticated().user._id;
         const token = isAuthenticated().token;
 
-        // (Signed-in user, auth token, user profile)
+        // (Signed-in user, auth token, user profile - in state)
         callApi(userId, token, user._id)
-        .then(async data => {
-            if (data.error) {
-                setError(data.error);
-            } else {
-                let following = await checkFollow(data);
-                console.log(following)
-                setUser(data);
-                setIsFollowing(following);
-            }
-        })
+            .then(async data => {
+                if (data.error) {
+                    setError(data.error);
+                } else {
+                    setUser(data);
+                    let following = await checkFollow(data);
+                    setIsFollowing(following);
+                }
+            })
     }
 
     const checkFollow = nUser => {
@@ -58,7 +57,6 @@ const Profile = (props) => {
             // Check if the signed-in user is following the fetched user's followers list
             return follower._id === jwt.user._id
         })
-        console.log(match)
         return match;
     }
 
@@ -93,25 +91,25 @@ const Profile = (props) => {
 
                     {   // Show edit and delete buttons only to signed in user
                         isAuthenticated().user &&
-                        isAuthenticated().user._id === user._id ? (
-                            <div className="d-inline-block">
-                                <Link to={`/user/edit/${user._id}`} className="btn btn-raised btn-success mr-5">
-                                    Edit Profile
+                            isAuthenticated().user._id === user._id ? (
+                                <div className="d-inline-block">
+                                    <Link to={`/user/edit/${user._id}`} className="btn btn-raised btn-success mr-5">
+                                        Edit Profile
                                 </Link>
-                                <DeleteUser userId={user._id} setRedirectToSignIn={setRedirectToSignIn} />
-                            </div>
-                        ) :
-                        <FollowUserButton isFollowing={isFollowing}
-                            handleFollow={handleFollow}
-                        />
+                                    <DeleteUser userId={user._id} setRedirectToSignIn={setRedirectToSignIn} />
+                                </div>
+                            ) :
+                            <FollowUserButton isFollowing={isFollowing}
+                                handleFollow={handleFollow}
+                            />
                     }
                 </div>
             </div>
             <div className="row">
                 <div className="col md-12 mt-4 mb-5">
-                    <hr/>
+                    <hr />
                     <p className="lead">{user.about}</p>
-                    <hr/>
+                    <hr />
                 </div>
             </div>
         </div>
