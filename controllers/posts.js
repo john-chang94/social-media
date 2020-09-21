@@ -22,10 +22,9 @@ exports.getPosts = (req, res) => {
         // Use populate becuase the Post model refers the postedBy by the User object model
         // Otherwise, it will only return the user id
         .populate('postedBy', '_id name') // ([property name to grab], [which properties to select in prop name])
+        .sort({ createdAt: -1 })
         .then(posts => {
-            res.status(200).json({
-                posts
-            })
+            res.status(200).json(posts);
         })
         .catch(err => console.log(err));
 }
@@ -112,4 +111,14 @@ exports.deletePost = (req, res) => {
         })
     })
 
+}
+
+exports.postPhoto = (req, res) => {
+    // Set photo type grabbed from req (jpg, png, etc)
+    res.set("Content-Type", req.post.photo.contentType);
+    return res.send(req.post.photo.data);
+}
+
+exports.loadPost = (req, res) => {
+    return res.json(req.post);
 }

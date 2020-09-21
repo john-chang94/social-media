@@ -102,12 +102,10 @@ exports.updateUser = (req, res, next) => {
     })
 }
 
-exports.userPhoto = (req, res, next) => {
-    if (req.profile.photo.data) {
-        res.set("Content-Type", req.profile.photo.contentType)
-        return res.send(req.profile.photo.data)
-    }
-    next();
+exports.userPhoto = (req, res) => {
+    // Set photo type grabbed from req (jpg, png, etc)
+    res.set("Content-Type", req.profile.photo.contentType)
+    return res.send(req.profile.photo.data)
 }
 
 exports.deleteUser = (req, res) => {

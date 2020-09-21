@@ -38,6 +38,11 @@ const Navbar = ({ history }) => {
                         </Link>
                     </li>
                     <li className="nav-item">
+                        <Link to='/post/create' className='nav-link' style={isActive(history, '/post/create')}>
+                            New Post
+                        </Link>
+                    </li>
+                    <li className="nav-item">
                         <Link to={`/user/${isAuthenticated().user._id}`} className='nav-link' style={isActive(history, `/user/${isAuthenticated().user._id}`)}>
                             {isAuthenticated().user.name}
                         </Link>
