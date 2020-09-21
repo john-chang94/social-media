@@ -40,9 +40,9 @@ export const authenticate = (jwt, next) => {
 export const signOut = () => {
     // window will not be available if the browser is still opening or loading...
     // We need to make sure we have a window object before using localStorage
-    if (typeof window !== 'undefined') {
+    // if (typeof window !== 'undefined') {
         localStorage.removeItem('token')
-    }
+    // }
 }
 
 export const isAuthenticated = () => {

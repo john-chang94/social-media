@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { fetchPosts } from './apiPost';
+import { getPosts } from './apiPost';
 import { isAuthenticated } from '../auth';
 import DefaultPost from '../images/puzzle.jpg';
 import { Link, Redirect } from 'react-router-dom';
@@ -10,7 +10,7 @@ class Posts extends Component {
     }
 
     componentDidMount() {
-        fetchPosts().then(data => {
+        getPosts().then(data => {
             if (data.error) {
                 console.log(data.error)
             } else {
@@ -44,7 +44,7 @@ class Posts extends Component {
                                     style={{ height: '200px' }}
                                 />
                                 <h5 className="card-title">{post.title}</h5>
-                                <p className="card-text">{post.body.length > 50 ? `${post.body.substring(0, 50)}...` : post.body}</p>
+                                <p className="card-text">{post.body.length > 45 ? `${post.body.substring(0, 45)}...` : post.body}</p>
                                 <br />
                                 <p className="font-italic mark">
                                     Posted by <Link to={`${posterId}`}>{posterName}</Link> on {new Date(post.createdAt).toDateString()}

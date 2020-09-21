@@ -16,7 +16,7 @@ export const createPost = (userId, token, post) => {
     })
 }
 
-export const fetchPosts = () => {
+export const getPosts = () => {
     return fetch(`${process.env.REACT_APP_API_URL}/posts`, {
         method: 'GET'
     })
@@ -31,6 +31,23 @@ export const fetchPosts = () => {
 export const loadPost = (postId) => {
     return fetch(`${process.env.REACT_APP_API_URL}/post/${postId}`, {
         method: 'GET'
+    })
+    .then(res => {
+        return res.json();
+    })
+    .catch(err => {
+        console.log(err)
+    })
+}
+
+export const getPostsByUser = (userId, token) => {
+    return fetch(`${process.env.REACT_APP_API_URL}/posts/${userId}`, {
+        method: 'GET',
+        headers: {
+            Accept: 'application/json',
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+        }
     })
     .then(res => {
         return res.json();

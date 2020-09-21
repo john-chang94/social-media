@@ -6,6 +6,7 @@ import DefaultProfile from '../images/avatar.png';
 import DeleteUser from './DeleteUser';
 import FollowUserButton from './FollowUserButton';
 import ProfileTabs from './ProfileTabs';
+import { getPostsByUser } from '../post/apiPost';
 
 const Profile = (props) => {
     const [user, setUser] = useState('');
@@ -13,6 +14,7 @@ const Profile = (props) => {
     const [isFollowing, setIsFollowing] = useState(false);
     const [following, setFollowing] = useState([]);
     const [followers, setFollowers] = useState([]);
+    const [posts, setPosts] = useState([]);
     const [error, setError] = useState('');
 
     // Get user info
@@ -32,9 +34,21 @@ const Profile = (props) => {
                     setUser(data);
                     setFollowing(data.following);
                     setFollowers(data.followers);
+                    loadPosts(data._id);
                 }
             })
     }
+
+    const loadPosts = userId => {
+        const token = isAuthenticated().token;
+        getPostsByUser(userId, token).then(data => {
+            if (data.error) {
+                console.log(data.error);
+            } else {
+                setPosts(data);
+            }
+        });
+    };
 
     const handleFollow = callApi => {
         const userId = isAuthenticated().user._id;
@@ -77,7 +91,7 @@ const Profile = (props) => {
         <div>
             <h2 className="mt-5 mb-5">Profile</h2>
             <div className="row">
-                <div className="col-md-6">
+                <div className="col-md-4">
                     <img src={photoURL}
                         alt={user.name}
                         style={{ height: '200px', width: 'auto' }}
@@ -85,7 +99,7 @@ const Profile = (props) => {
                         onError={i => (i.target.src = `${DefaultProfile}`)}
                     />
                 </div>
-                <div className="col-md-6">
+                <div className="col-md-8">
                     <div className="lead mt-2">
                         <p>Hello, {user.name}</p>
                         <p>Email: {user.email}</p>
@@ -94,17 +108,22 @@ const Profile = (props) => {
 
                     {   // Show edit and delete buttons only to signed in user
                         isAuthenticated().user &&
-                            isAuthenticated().user._id === user._id ? (
+                            isAuthenticated().user._id === user._id
+                            ? (
                                 <div className="d-inline-block">
+                                    <Link to='/post/create' className="btn btn-raised btn-info mr-5">
+                                        New Post
+                                    </Link>
                                     <Link to={`/user/edit/${user._id}`} className="btn btn-raised btn-success mr-5">
                                         Edit Profile
-                                </Link>
+                                    </Link>
                                     <DeleteUser userId={user._id} setRedirectToSignIn={setRedirectToSignIn} />
                                 </div>
-                            ) :
-                            <FollowUserButton isFollowing={isFollowing}
+                            )
+                            : <FollowUserButton isFollowing={isFollowing}
                                 handleFollow={handleFollow}
                             />
+
                     }
 
                 </div>
@@ -114,7 +133,7 @@ const Profile = (props) => {
                     <hr />
                     <p className="lead">{user.about}</p>
                     <hr />
-                    <ProfileTabs followers={followers} following={following} />
+                    <ProfileTabs followers={followers} following={following} posts={posts} />
                 </div>
             </div>
         </div>

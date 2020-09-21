@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { loadPost } from './apiPost';
 import DefaultPost from '../images/puzzle.jpg';
 import { Link } from 'react-router-dom';
+import { isAuthenticated } from '../auth';
 
 class Post extends Component {
     state = {
@@ -44,7 +45,18 @@ class Post extends Component {
                 <p className="font-italic mark">
                     Posted by <Link to={`${posterId}`}>{posterName}</Link> on {new Date(post.createdAt).toDateString()}
                 </p>
-                <Link to='/' className="btn btn-raised btn-sm btn-primary">Home</Link>
+                <div className="d-inline-block">
+                    <Link to='/' className="btn btn-raised btn-primary mr-5">Home</Link>
+                    {
+                        // Show edit and delete buttons to signed-in user only
+                        isAuthenticated().user &&
+                        isAuthenticated().user._id === post.postedBy._id &&
+                        <>
+                            <button className="btn btn-raised btn-warning mr-5">Edit</button>
+                            <button className="btn btn-raised btn-danger">Delete</button>
+                        </>
+                    }
+                </div>
             </div>
         )
     }
