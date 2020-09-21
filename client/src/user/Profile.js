@@ -5,13 +5,14 @@ import { read } from './apiUser';
 import DefaultProfile from '../images/avatar.png';
 import DeleteUser from './DeleteUser';
 import FollowUserButton from './FollowUserButton';
+import ProfileTabs from './ProfileTabs';
 
 const Profile = (props) => {
     const [user, setUser] = useState('');
     const [redirectToSignIn, setRedirectToSignIn] = useState(false);
     const [isFollowing, setIsFollowing] = useState(false);
-    const [followingList, setFollowingList] = useState([]);
-    const [followerList, setFollowerList] = useState([]);
+    const [following, setFollowing] = useState([]);
+    const [followers, setFollowers] = useState([]);
     const [error, setError] = useState('');
 
     // Get user info
@@ -28,7 +29,9 @@ const Profile = (props) => {
                     let following = await checkFollow(data);
                     setIsFollowing(following);
                     // Set user info in state
-                    setUser(data)
+                    setUser(data);
+                    setFollowing(data.following);
+                    setFollowers(data.followers);
                 }
             })
     }
@@ -103,6 +106,7 @@ const Profile = (props) => {
                                 handleFollow={handleFollow}
                             />
                     }
+
                 </div>
             </div>
             <div className="row">
@@ -110,6 +114,7 @@ const Profile = (props) => {
                     <hr />
                     <p className="lead">{user.about}</p>
                     <hr />
+                    <ProfileTabs followers={followers} following={following} />
                 </div>
             </div>
         </div>

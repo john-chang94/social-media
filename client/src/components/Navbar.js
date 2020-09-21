@@ -33,12 +33,17 @@ const Navbar = ({ history }) => {
                         <Link to='/users' className='nav-link' style={isActive(history, '/users')}>Users</Link>
                     </li>
                     <li className="nav-item">
-                        <span className='nav-link' style={isActive(history, '/signup'), { cursor: 'pointer', color: 'white' }} onClick={() => signOut(() => history.push('/'))}>Sign Out</span>
+                        <Link to='/findpeople' className='nav-link' style={isActive(history, '/findpeople')}>
+                            Find People
+                        </Link>
                     </li>
                     <li className="nav-item">
-                            <Link to={`/user/${isAuthenticated().user._id}`} className='nav-link' style={isActive(history, `/user/${isAuthenticated().user._id}`)}>
-                                {isAuthenticated().user.name}
-                            </Link>
+                        <Link to={`/user/${isAuthenticated().user._id}`} className='nav-link' style={isActive(history, `/user/${isAuthenticated().user._id}`)}>
+                            {isAuthenticated().user.name}
+                        </Link>
+                    </li>
+                    <li className="nav-item">
+                        <span className='nav-link' style={isActive(history, '/signup'), { cursor: 'pointer', color: 'white' }} onClick={() => signOut(() => history.push('/'))}>Sign Out</span>
                     </li>
                 </>
             }
