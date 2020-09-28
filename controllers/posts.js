@@ -98,6 +98,37 @@ exports.updatePost = (req, res) => {
     })
 }
 
+exports.updatePost = (req, res, next) => {
+    let form = new formidable.IncomingForm();
+    form.keepExtensions = true;
+    form.parse(req, (err, fields, files) => {
+        if (err) {
+            return res.status(400).json({
+                error: 'Photo could not be uploaded'
+            })
+        }
+        // Post info gets saved in req.post from post ID in URL
+        let post = req.post;
+        post = _.extend(post, fields)
+        post.updatedAt = Date.now()
+
+        // If there is a photo, update post data
+        if (files.photo) {
+            post.photo.data = fs.readFileSync(files.photo.path)
+            post.photo.contentType = files.photo.type
+        }
+
+        post.save((err, result) => {
+            if (err) {
+                return res.status(400).json({
+                    error: err
+                })
+            }
+            res.json(post);
+        })
+    })
+}
+
 exports.deletePost = (req, res) => {
     let post = req.post // Grabbing from postById method
     post.remove((err, deletePost) => {

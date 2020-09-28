@@ -60,7 +60,6 @@ export const updateUser = (user, next) => {
 }
 
 export const remove = (userId, token) => {
-    console.log(userId)
     return fetch(`${process.env.REACT_APP_API_URL}/user/${userId}`, {
         method: 'DELETE',
         headers: {

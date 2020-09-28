@@ -41,7 +41,7 @@ class Posts extends Component {
                                     alt={post.title}
                                     onError={i => i.target.src = `${DefaultPost}`}
                                     className="img-thumbnail mb-3"
-                                    style={{ height: '200px' }}
+                                    style={{ height: '200px', width: '100%' }}
                                 />
                                 <h5 className="card-title">{post.title}</h5>
                                 <p className="card-text">{post.body.length > 45 ? `${post.body.substring(0, 45)}...` : post.body}</p>

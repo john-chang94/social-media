@@ -25,6 +25,26 @@ class EditProfile extends Component {
         this.init(userId);
     }
 
+    // Get user info
+    init = userId => {
+        const token = isAuthenticated().token;
+
+        read(userId, token)
+            .then(data => {
+                if (data.error) {
+                    this.setState({ redirectToProfile: true })
+                } else {
+                    this.setState({
+                        id: data._id,
+                        name: data.name,
+                        email: data.email,
+                        about: data.about,
+                        error: ''
+                    })
+                }
+            })
+    }
+
     isValid = () => {
         const { name, email, password, fileSize } = this.state;
         if (fileSize > 300000) {
@@ -47,32 +67,13 @@ class EditProfile extends Component {
         }
         // If user input is at least one character (in process of editing), then validate input
         if (password.length >= 1 && password.length <= 7) {
-            this.setState({ error: 'Password must be at least 8 characters',
-            loading: false    
-        })
+            this.setState({
+                error: 'Password must be at least 8 characters',
+                loading: false
+            })
             return false;
         }
         return true;
-    }
-
-    // Get user info
-    init = userId => {
-        const token = isAuthenticated().token;
-
-        read(userId, token)
-            .then(data => {
-                if (data.error) {
-                    this.setState({ redirectToProfile: true })
-                } else {
-                    this.setState({
-                        id: data._id,
-                        name: data.name,
-                        email: data.email,
-                        about: data.about,
-                        error: ''
-                    })
-                }
-            })
     }
 
     handleChange = (name) => e => {
@@ -169,13 +170,13 @@ class EditProfile extends Component {
             <div>
                 <h2 className="mt-5 mb-5">Edit Profile</h2>
                 {
-                    error ?
-                        <div className="alert alert-danger mt-2">{error}</div>
+                    error
+                        ? <div className="alert alert-danger mt-2">{error}</div>
                         : null
                 }
                 {
-                    loading ?
-                        <div className="jumbotron text-center">
+                    loading
+                        ? <div className="jumbotron text-center">
                             <h2>Loading...</h2>
                         </div>
                         : null

@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
-import { loadPost } from './apiPost';
+import { Redirect } from 'react-router-dom';
+import { loadPost, removePost } from './apiPost';
 import DefaultPost from '../images/puzzle.jpg';
 import { Link } from 'react-router-dom';
 import { isAuthenticated } from '../auth';
 
 class Post extends Component {
     state = {
-        post: ''
+        post: '',
+        redirectToHome: false
     }
 
     componentDidMount() {
@@ -19,6 +21,23 @@ class Post extends Component {
                     this.setState({ post: data })
                 }
             })
+    }
+
+    deletePost = () => {
+        let answer = window.confirm('Are you sure you want to delete this post?');
+
+        if (answer) {
+            const postId = this.props.match.params.postId;
+            const token = isAuthenticated().token;
+            removePost(postId, token)
+                .then(data => {
+                    if (data.error) {
+                        console.log(data.error)
+                    } else {
+                        this.setState({ redirectToHome: true })
+                    }
+                })
+        }
     }
 
     renderPost = post => {
@@ -52,8 +71,8 @@ class Post extends Component {
                         isAuthenticated().user &&
                         isAuthenticated().user._id === post.postedBy._id &&
                         <>
-                            <button className="btn btn-raised btn-warning mr-5">Edit</button>
-                            <button className="btn btn-raised btn-danger">Delete</button>
+                            <Link to={`/post/edit/${post._id}`} className="btn btn-raised btn-warning mr-5">Edit</Link>
+                            <button className="btn btn-raised btn-danger" onClick={this.deletePost}>Delete</button>
                         </>
                     }
                 </div>
@@ -62,6 +81,9 @@ class Post extends Component {
     }
 
     render() {
+        if (this.state.redirectToHome) {
+            return <Redirect to='/' />
+        }
         const { post } = this.state;
         return (
             <div>
