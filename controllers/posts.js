@@ -23,6 +23,7 @@ exports.getPosts = (req, res) => {
     Post.find()
         // Use populate becuase the Post model refers the postedBy by the User object model
         // Otherwise, it will only return the user id
+        // Populate is just for viewing purposes, does not alter db
         .populate('postedBy', '_id name') // ([property name to grab], [which properties to select in prop name])
         .populate('comments', 'text createdAt')
         .populate('comments.postedBy', '_id name')
@@ -199,7 +200,7 @@ exports.addComment = (req, res) => {
         { new: true }
     )
     .populate('comments.postedBy', '_id name')
-    .populate('postedBy', '_id name')
+    // .populate('postedBy', '_id name')
     .exec((err, result) => {
         if (err) {
             return res.status(400).json({
@@ -220,7 +221,7 @@ exports.deleteComment = (req, res) => {
         { new: true }
     )
     .populate('comments.postedBy', '_id name')
-    .populate('postedBy', '_id name')
+    // .populate('postedBy', '_id name')
     .exec((err, result) => {
         if (err) {
             return res.status(400).json({

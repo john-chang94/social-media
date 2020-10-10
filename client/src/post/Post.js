@@ -4,6 +4,7 @@ import { loadPost, removePost, likePost, unlikePost } from './apiPost';
 import DefaultPost from '../images/puzzle.jpg';
 import { Link } from 'react-router-dom';
 import { isAuthenticated } from '../auth';
+import Comment from './Comment';
 
 class Post extends Component {
     state = {
@@ -11,7 +12,8 @@ class Post extends Component {
         redirectToHome: false,
         redirectToSignIn: false,
         hasLiked: false,
-        likes: 0
+        likes: 0,
+        comments: []
     }
 
     componentDidMount() {
@@ -28,7 +30,8 @@ class Post extends Component {
                     this.setState({
                         post: data,
                         likes: data.likes.length,
-                        hasLiked: this.checkLike(data.likes)
+                        hasLiked: this.checkLike(data.likes),
+                        comments: data.comments
                     })
                 }
             })
@@ -81,6 +84,10 @@ class Post extends Component {
                     })
                 }
             })
+    }
+
+    updateComments = comments => {
+        this.setState({ comments })
     }
 
     renderPost = post => {
@@ -150,6 +157,8 @@ class Post extends Component {
                         </div>
                         : this.renderPost(post)
                 }
+                
+                <Comment postId={post._id} comments={this.state.comments} updateComments={this.updateComments} />
             </div>
         );
     }
