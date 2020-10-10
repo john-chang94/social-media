@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Redirect } from 'react-router-dom';
-import { loadPost, removePost } from './apiPost';
+import { loadPost, removePost, likePost, unlikePost } from './apiPost';
 import DefaultPost from '../images/puzzle.jpg';
 import { Link } from 'react-router-dom';
 import { isAuthenticated } from '../auth';
@@ -8,19 +8,38 @@ import { isAuthenticated } from '../auth';
 class Post extends Component {
     state = {
         post: '',
-        redirectToHome: false
+        redirectToHome: false,
+        redirectToSignIn: false,
+        hasLiked: false,
+        likes: 0
     }
 
     componentDidMount() {
+        if (!isAuthenticated()) {
+            this.setState({ redirectToSignIn: true })
+            return;
+        }
         const postId = this.props.match.params.postId;
         loadPost(postId)
             .then(data => {
                 if (data.erro) {
                     console.log(data.error)
                 } else {
-                    this.setState({ post: data })
+                    this.setState({
+                        post: data,
+                        likes: data.likes.length,
+                        hasLiked: this.checkLike(data.likes)
+                    })
                 }
             })
+    }
+
+    checkLike = (likes) => {
+        const userId = isAuthenticated().user._id;
+        // indexOf returns -1 if no match is found
+        // Will return true if found, otherwise false
+        let match = likes.indexOf(userId) !== -1
+        return match;
     }
 
     deletePost = () => {
@@ -40,6 +59,30 @@ class Post extends Component {
         }
     }
 
+    toggleLike = () => {
+        if (!isAuthenticated()) {
+            this.setState({ redirectToSignIn: true })
+            return;
+        }
+
+        let callApi = this.state.hasLiked ? unlikePost : likePost;
+        const userId = isAuthenticated().user._id;
+        const token = isAuthenticated().token;
+        const postId = this.state.post._id;
+
+        callApi(userId, token, postId)
+            .then(data => {
+                if (data.error) {
+                    console.log(data.error)
+                } else {
+                    this.setState({
+                        hasLiked: !this.state.hasLiked,
+                        likes: data.likes.length
+                    })
+                }
+            })
+    }
+
     renderPost = post => {
         // We have return twice with curly brackets so we can set the consts before the actual render
         const posterId = post.postedBy
@@ -50,6 +93,8 @@ class Post extends Component {
         const posterName = post.postedBy
             ? post.postedBy.name
             : ' Unknown'
+
+        const { hasLiked, likes } = this.state;
         return (
             <div className="card-body">
                 <img
@@ -59,6 +104,13 @@ class Post extends Component {
                     className="img-thumbnail mb-3"
                     style={{ width: '100%' }}
                 />
+
+                {
+                    hasLiked
+                        ? <h3><i onClick={this.toggleLike} className="fa fa-thumbs-up text-success bg-dark" style={{ padding: '8px', borderRadius: '50%', cursor: 'pointer' }}></i> {likes} Like</h3>
+                        : <h3><i onClick={this.toggleLike} className="fa fa-thumbs-up text-warning bg-dark" style={{ padding: '8px', borderRadius: '50%', cursor: 'pointer' }}></i> {likes} Like</h3>
+                }
+                
                 <p className="card-text">{post.body}</p>
                 <br />
                 <p className="font-italic mark">
@@ -81,10 +133,13 @@ class Post extends Component {
     }
 
     render() {
-        if (this.state.redirectToHome) {
+        const { post, redirectToHome, redirectToSignIn } = this.state;
+        if (redirectToHome) {
             return <Redirect to='/' />
         }
-        const { post } = this.state;
+        if (redirectToSignIn) {
+            return <Redirect to='/signin' />
+        }
         return (
             <div>
                 <h2 className="display-2 mt-3">{post.title}</h2>
