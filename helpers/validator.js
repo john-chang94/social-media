@@ -24,7 +24,7 @@ exports.createPostValidator = (req, res, next) => {
 exports.signUpValidator = (req, res, next) => {
     req.check('name', 'Name required').notEmpty();
     req.check('email', 'Email required').notEmpty();
-    req.check('email', 'Must be valid email').isEmail();
+    req.check('email', 'Must be a valid email').isEmail();
     req.check('email', 'Email must be between 4 to 200 characters').isLength({
         min: 4,
         max: 200
@@ -38,6 +38,21 @@ exports.signUpValidator = (req, res, next) => {
         return res.status(400).json({
             error: firstError
         })
+    }
+
+    next();
+}
+
+exports.passwordResetValidator = (req, res, next) => {
+    req.check('newPassword', 'Password is required').notEmpty();
+    req.check('newPassword')
+        .isLength({ min: 8 })
+        .withMessage('Password must be at least 8 characters long')
+
+    const errors = req.validationErrors();
+    if (errors) {
+        const error = errors.map(error => error.msg)[0];
+        return res.status(400).json({ error })
     }
 
     next();
