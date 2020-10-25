@@ -75,7 +75,7 @@ userSchema.methods = {
     encryptPassword: function(password) {
         if (!password) return '';
         try {
-            // Crypto is build into node for hashing
+            // Crypto is built into node for hashing
             return crypto.createHmac('sha1', this.salt)
                     .update(password)
                     .digest('hex');
