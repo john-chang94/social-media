@@ -9,10 +9,12 @@ import Profile from './user/Profile';
 import Users from './user/Users';
 import EditProfile from './user/EditProfile';
 import FindPeople from './user/FindPeople';
+import ForgotPassword from './user/ForgotPassword';
 import NewPost from './post/NewPost';
 import PrivateRoute from './auth/PrivateRoute';
 import Post from './post/Post';
 import EditPost from './post/EditPost';
+import ResetPassword from './user/ResetPassword';
 
 const MainRouter = () => (
     <div>
@@ -25,6 +27,8 @@ const MainRouter = () => (
             <Route path='/users' component={Users} />
             <Route path='/signup' component={SignUp} />
             <Route path='/signin' component={SignIn} />
+            <Route path='/forgot-password' component={ForgotPassword} />
+            <Route exact path='/reset-password/:resetPasswordToken' component={ResetPassword} />
             <PrivateRoute exact path='/user/edit/:userId' component={EditProfile} />
             <PrivateRoute path='/findpeople' component={FindPeople} />
             <PrivateRoute exact path='/user/:userId' component={Profile} />

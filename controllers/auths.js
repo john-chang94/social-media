@@ -58,7 +58,7 @@ exports.forgotPassword = (req, res) => {
         // If err or no user
         if (err || !user)
             return res.status('401').json({
-                error: 'User with that email does not exist!'
+                error: 'Email does not exist'
             });
 
         // Generate a token with user id and secret
@@ -115,7 +115,7 @@ exports.resetPassword = (req, res) => {
                 });
             }
             res.json({
-                message: 'Great! Now you can login with your new password.'
+                message: 'Great! Now you can sign in with your new password.'
             });
         });
     });
